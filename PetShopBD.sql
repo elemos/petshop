@@ -64,7 +64,8 @@ create table if not exists Atendimento (
     id_pet integer,
     dtatendimento date,
 	descricao varchar (400),
-    Valor long,
+    valor double,
 
     FOREIGN KEY (id_pet) REFERENCES Pets(id)
     );    
+    

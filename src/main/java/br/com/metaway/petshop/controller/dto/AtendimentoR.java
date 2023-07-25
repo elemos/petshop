@@ -13,7 +13,7 @@ public class AtendimentoR {
 
     private String descricao;
 
-    private double valor;
+    private Double valor;
 
     private Date dtatendimento;
 
@@ -41,11 +41,11 @@ public class AtendimentoR {
         this.descricao = descricao;
     }
 
-    public double getValor() {
+    public Double getValor() {
         return valor;
     }
 
-    public void setValor(double valor) {
+    public void setValor(Double valor) {
         this.valor = valor;
     }
 

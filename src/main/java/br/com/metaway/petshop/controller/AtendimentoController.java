@@ -34,5 +34,6 @@ public class AtendimentoController {
         at.setDescricao(atendimento.getDescricao());
         at.setDtatendimento(atendimento.getDtatendimento());
         at.setValor(atendimento.getValor());
+        atendimentoRepository.save(at);
     }
 }

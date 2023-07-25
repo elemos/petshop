@@ -16,8 +16,9 @@ public class Atendimento {
 
     private String descricao;
 
-    private double valor;
+    private Double valor;
 
+    @Column(name="dtatendimento")
     private Date dtAtendimento;
     public Integer getId() {
         return id;
@@ -43,11 +44,11 @@ public class Atendimento {
         this.descricao = descricao;
     }
 
-    public double getValor() {
+    public Double getValor() {
         return valor;
     }
 
-    public void setValor(double valor) {
+    public void setValor(Double valor) {
         this.valor = valor;
     }
 

@@ -54,6 +54,7 @@ public class PetR {
 
     public static PetR converter(Pet p){
         var pet = new PetR();
+        pet.setId(p.getId());
         pet.setId_cliente(p.getId_cliente());
         pet.setId_raca(p.getId_raca());
         pet.setDtnascimento(p.getDtnascimento());
