@@ -1,0 +1,26 @@
+version: '3'
+services:
+  petshop:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    image: petshop/api
+    ports:
+      - '8080:8080'
+      - '5005:5005'
+    environment:
+      - ADDITIONAL_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -Xmx1G -Xms128m -XX:MaxMetaspaceSize=128m
+      - PROFILE=dev
+    links:
+      - db
+  db:
+    image: mysql:5.7
+    ports:
+      - '3306:3306'
+    environment:
+      - MYSQL_DATABASE=petshop
+      - MYSQL_USER=petshop
+      - MYSQL_PASSWORD=petshop
+      - MYSQL_ROOT_PASSWORD=petshoproot
+    volumes:
+      - ./docker/volume_mysql:/var/lib/mysql
