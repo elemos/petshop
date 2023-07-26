@@ -31,7 +31,9 @@ create table if not exists User (
     
     FOREIGN KEY (id_cliente) REFERENCES Client(id)
     );
-    
+  
+  INSERT INTO ENDERECO() values(null,1,"Rua Para", "Santa Maria", "Random", "apt 300", "apartamento");
+  
   create table if not exists Contato (
 	id integer PRIMARY KEY auto_increment,
     id_cliente integer,
@@ -41,6 +43,8 @@ create table if not exists User (
     
     FOREIGN KEY (id_cliente) REFERENCES Client(id)
     );    
+ 
+ INSERT INTO Contato() values(null, 1, "email", "asdf@gmail.com", "random");
  
 create table if not exists Raca (
 	id integer PRIMARY KEY auto_increment,

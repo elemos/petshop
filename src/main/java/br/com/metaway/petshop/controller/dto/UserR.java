@@ -4,7 +4,6 @@ import br.com.metaway.petshop.model.User;
 
 public class UserR {
 
-    private Integer id;
     private String cpf;
     private String nome;
     private Integer Tipo;
@@ -23,14 +22,6 @@ public class UserR {
 
     public void setTipo(Integer tipo) {
         Tipo = tipo;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public String getCpf() {
