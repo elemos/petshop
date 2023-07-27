@@ -1,11 +1,13 @@
 package br.com.metaway.petshop.controller.dto;
 
+import br.com.metaway.petshop.UserRoles;
+
 public class UserRq {
 
     private String cpf;
     private String nome;
     private String ps;
-    private Integer tipo;
+    private UserRoles tipo;
 
     public String getCpf() {
         return cpf;
@@ -31,11 +33,11 @@ public class UserRq {
         this.ps = ps;
     }
 
-    public Integer getTipo() {
+    public UserRoles getTipo() {
         return tipo;
     }
 
-    public void setTipo(Integer tipo) {
+    public void setTipo(UserRoles tipo) {
         this.tipo = tipo;
     }
 }
