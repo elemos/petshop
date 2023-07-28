@@ -18,6 +18,15 @@ public class Client {
     @Column(name="dtcadastro")
     private Date dtcadastro;
 
+    public Client(){}
+
+    public Client(Integer id, String nome, String cpf, Date dtcadastro) {
+        this.id = id;
+        this.nome = nome;
+        this.cpf = cpf;
+        this.dtcadastro = dtcadastro;
+    }
+
     public Integer getId() {
         return id;
     }

@@ -1,5 +1,7 @@
 package br.com.metaway.petshop.controller.dto;
 
+import br.com.metaway.petshop.model.Pet;
+
 import java.sql.Date;
 
 public class PetRq {
@@ -50,4 +52,12 @@ public class PetRq {
         this.nome = nome;
     }
 
+    public static Pet converter(PetRq p){
+        var pet = new Pet();
+        pet.setId_cliente(p.getId_cliente());
+        pet.setId_raca(p.getId_raca());
+        pet.setDtnascimento(p.getDtnascimento());
+        pet.setNome(p.getNome());
+        return pet;
+    }
 }

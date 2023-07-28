@@ -17,6 +17,16 @@ public class Contato {
 
     private String valor;
 
+    public Contato(){}
+
+    public Contato(Integer id, Integer id_cliente, String tag, String tipo, String valor) {
+        this.id = id;
+        this.id_cliente = id_cliente;
+        this.tag = tag;
+        this.tipo = tipo;
+        this.valor = valor;
+    }
+
     public Integer getId() {
         return id;
     }

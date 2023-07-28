@@ -22,6 +22,18 @@ public class Endereco {
 
     private String tag;
 
+    public Endereco(){}
+
+    public Endereco(Integer id, Integer id_cliente, String logradouro, String cidade, String bairro, String complemento, String tag) {
+        this.id = id;
+        this.id_cliente = id_cliente;
+        this.logradouro = logradouro;
+        this.cidade = cidade;
+        this.bairro = bairro;
+        this.complemento = complemento;
+        this.tag = tag;
+    }
+
     public Integer getId() {
         return id;
     }

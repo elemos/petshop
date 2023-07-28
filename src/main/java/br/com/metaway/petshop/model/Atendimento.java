@@ -21,7 +21,20 @@ public class Atendimento {
     private Double valor;
 
     @Column(name="dtatendimento")
-    private Date dtAtendimento;
+    private Date dtatendimento;
+
+    public Atendimento() {
+    }
+
+    public Atendimento(Integer id, Integer id_pet, Integer id_cliente, String descricao, Double valor, Date dtatendimento) {
+        this.id = id;
+        this.id_pet = id_pet;
+        this.id_cliente = id_cliente;
+        this.descricao = descricao;
+        this.valor = valor;
+        this.dtatendimento = dtatendimento;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -63,11 +76,11 @@ public class Atendimento {
     }
 
     public Date getDtatendimento() {
-        return dtAtendimento;
+        return dtatendimento;
     }
 
     public void setDtatendimento(Date data) {
-        this.dtAtendimento = data;
+        this.dtatendimento = data;
     }
 
 

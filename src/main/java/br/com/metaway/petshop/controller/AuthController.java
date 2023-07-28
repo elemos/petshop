@@ -24,16 +24,16 @@ public class AuthController {
     @Autowired
     private TokenService tokenService;
 
+    /**
+     * Metodo de Login, recebe um AuthRequest com login(cpf) e senha
+     * @param authRq
+     * @return Retorna o JWT
+     */
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody @Valid AuthRq authRq){
 
         var usernamePassword = new UsernamePasswordAuthenticationToken(authRq.login(), authRq.ps());
-        System.out.println("Credentials" + usernamePassword.getCredentials().toString());
         var auth = this.authenticationManager.authenticate(usernamePassword);
-        System.out.println("RetornoAuth" + auth.isAuthenticated());
-        System.out.println(auth.getName());
-        System.out.println(auth.toString());
-        System.out.println(((User) auth.getPrincipal()).getPs());
         var token = tokenService.generateToken((User) auth.getPrincipal());
 
         return ResponseEntity.ok(token);

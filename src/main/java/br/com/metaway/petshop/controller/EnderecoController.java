@@ -28,6 +28,11 @@ public class EnderecoController {
         this.clientRepository = clientRepository;
     }
 
+    /**
+     * Retorna a lista de todos endereços de for adm
+     * Se for cliente retorna a lista de todos endereços do user logado
+     * @return
+     */
     @GetMapping("/")
     public List<EnderecoR>finAll(){
 
@@ -43,6 +48,11 @@ public class EnderecoController {
         return enderecos.stream().map(EnderecoR::converter).collect(Collectors.toList());
     }
 
+    /**
+     * Cadastra um novo endereço se for adm
+     * Se for cliente cadastra o novo endereço se o id do cliente passado for igual ao id do user logado
+     * @param endereco
+     */
     @PostMapping("/")
     public void cadastroEndereco(@RequestBody EnderecoRq endereco){
 
@@ -54,18 +64,18 @@ public class EnderecoController {
                                 .getCpf())
                         .get(0)
                         .getId().equals(endereco.getId_cliente())) {
-            var e = new Endereco();
-            e.setId_cliente(endereco.getId_cliente());
-            e.setCidade(endereco.getCidade());
-            e.setBairro(endereco.getBairro());
-            e.setLogradouro(endereco.getLogradouro());
-            e.setComplemento(endereco.getComplemento());
-            e.setTag(endereco.getTag());
+            var e = EnderecoRq.converter(endereco);
             enderecoRepository.save(e);
         } else{
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
     }
+
+    /**
+     * Edita um endereço cadastrado se for adm
+     * Se for cliente edita se o id do cliente recebido for igual ao user logado
+     * @param endereco
+     */
     @PutMapping("/")
     public void updateEndereco(@RequestBody EnderecoRq endereco){
         User loggedUser = Utils.getLoggedUser();
@@ -73,11 +83,7 @@ public class EnderecoController {
 
         var oldEndereco = enderecoRepository.findById(endereco.getId()).get();
         if(role.equals(UserRoles.ADMIN)) {
-            oldEndereco.setId_cliente(endereco.getId_cliente());
-            oldEndereco.setCidade(endereco.getCidade());
-            oldEndereco.setBairro(endereco.getBairro());
-            oldEndereco.setComplemento(endereco.getComplemento());
-            oldEndereco.setTag(endereco.getTag());
+            oldEndereco = EnderecoRq.converter(endereco);
             enderecoRepository.save(oldEndereco);
         }else if (clientRepository.findBycpf(loggedUser.getCpf()).get(0).getId().equals(endereco.getId_cliente())){
             oldEndereco.setCidade(endereco.getCidade());
@@ -90,6 +96,11 @@ public class EnderecoController {
         }
     }
 
+    /**
+     * Deleta um endereco cadastrado
+     * se for cliente só deleta se o id do cliente recebido for igual ao id do user logado
+     * @param id_endereco
+     */
     @DeleteMapping("/{id}")
     public void deleteEndereco(@PathVariable("id") int id_endereco){
         var oldEndereco = enderecoRepository.findById(id_endereco).get();

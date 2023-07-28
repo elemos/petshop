@@ -67,4 +67,14 @@ public class AtendimentoRq {
         this.dtatendimento = dtatendimento;
     }
 
+    public static Atendimento converter(AtendimentoRq a){
+        var at = new Atendimento();
+        at.setId_pet(a.getId_pet());
+        at.setId_cliente((a.getId_cliente()));
+        at.setDescricao(a.getDescricao());
+        at.setDtatendimento(a.getDtatendimento());
+        at.setValor(a.getValor());
+        return at;
+    }
+
 }

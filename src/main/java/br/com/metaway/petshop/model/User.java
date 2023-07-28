@@ -26,6 +26,15 @@ public class User implements UserDetails {
         return tipo;
     }
 
+    public User(){}
+
+    public User(String cpf, String nome, String ps, UserRoles tipo) {
+        this.cpf = cpf;
+        this.nome = nome;
+        this.ps = ps;
+        this.tipo = tipo;
+    }
+
     public void setTipo(UserRoles tipo) {
         this.tipo = tipo;
     }

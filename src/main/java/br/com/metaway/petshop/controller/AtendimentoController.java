@@ -10,7 +10,6 @@ import br.com.metaway.petshop.repository.AtendimentoRepository;
 import br.com.metaway.petshop.repository.ClientRepository;
 import br.com.metaway.petshop.repository.PetRepository;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -32,6 +31,11 @@ public class AtendimentoController {
         this.petRepository = petRepository;
     }
 
+    /**
+     * Função que retorna todos os Atendimentos se for admin.
+     * @returnlista com todos atendimentos
+     */
+
     @GetMapping("/")
     public List<AtendimentoR> findAll(){
 
@@ -45,13 +49,20 @@ public class AtendimentoController {
 
     }
 
+    /**
+     * Função que retorna todos os Atendimentos para um pet se for admin.
+     * Caso seja um cliente irá retornar todos atendimentos para o pet desde que
+     * o id do pet passado pertença ao cliente logado.
+     * @param id_pet id do pet para buscar os atendimento
+     * @return Lista com atendimentos do pet
+     */
     @GetMapping("/{id_pet}")
     public List<AtendimentoR> findAllbyPet(@PathVariable Integer id_pet){
         User loggedUser = Utils.getLoggedUser();
         var role = Utils.getUserRole();
 
         if(role.equals(UserRoles.ADMIN)){
-            var atendimentos = atendimentoRepository.findById(id_pet);
+            var atendimentos = atendimentoRepository.findByPetId(id_pet);
             return atendimentos.stream().map(AtendimentoR::converter).collect(Collectors.toList());
         }
 
@@ -63,10 +74,13 @@ public class AtendimentoController {
                 return atendimento.stream().map(AtendimentoR::converter).collect(Collectors.toList());
             }
         }
-
-        return null;
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN);
     }
 
+    /**
+    * Retorna todos atendimento caso for admin
+    * Caso seja um cliente irá retornar todos atendimento para o cliente logado.
+     */
     @GetMapping("/cliente")
     public List<AtendimentoR> findAllbyClient(){
 
@@ -82,6 +96,10 @@ public class AtendimentoController {
         return atendimento.stream().map(AtendimentoR::converter).collect(Collectors.toList());
     }
 
+    /**
+     * Cadastra um novo atendimento, acessivel apenas para ADM
+     * @param atendimento dados do atendimento
+     */
     @PostMapping("/")
     public void cadastroAtendimento(@RequestBody AtendimentoRq atendimento){
 
@@ -92,26 +110,25 @@ public class AtendimentoController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
 
-        var at = new Atendimento();
-        at.setId_pet(atendimento.getId_pet());
-        at.setId_cliente(atendimento.getId_cliente());
-        at.setDescricao(atendimento.getDescricao());
-        at.setDtatendimento(atendimento.getDtatendimento());
-        at.setValor(atendimento.getValor());
+        var at = AtendimentoRq.converter(atendimento);
         atendimentoRepository.save(at);
     }
 
+    /**
+     * Atualia um atendimento já cadastrado, disponivel apenas para ADM
+     * @param atendimento dados a serem alterados
+     */
     @PutMapping("/")
     public void updateAtendimento(@RequestBody AtendimentoRq atendimento){
         var oldAtendimento = atendimentoRepository.findById(atendimento.getId()).get();
-        oldAtendimento.setId_cliente(atendimento.getId_cliente());
-        oldAtendimento.setId_pet(atendimento.getId_pet());
-        oldAtendimento.setDtatendimento(atendimento.getDtatendimento());
-        oldAtendimento.setDescricao(atendimento.getDescricao());
-        oldAtendimento.setValor(atendimento.getValor());
+        oldAtendimento = AtendimentoRq.converter(atendimento);
         atendimentoRepository.save(oldAtendimento);
     }
 
+    /**
+     * Deleta um atendimento criado, disponivel apenas para ADM
+     * @param id_atendimento id do atendimento a ser deletado
+     */
     @DeleteMapping("/{id}")
     public void deleteRaca(@PathVariable("id") int id_atendimento){
         var oldRaca = atendimentoRepository.findById(id_atendimento).get();

@@ -9,7 +9,6 @@ import br.com.metaway.petshop.controller.dto.UserRq;
 import br.com.metaway.petshop.repository.ClientRepository;
 import br.com.metaway.petshop.repository.UserRepository;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -31,29 +30,34 @@ public class UserController {
         this.userRepository = userRepository;
         this.clientRepository = clientRepository;
     }
+
+    /**
+     * Reorna lista de todos usuarios, apenas para adm
+     * @return List of UserR
+     */
     @GetMapping("/")
     public List<UserR> findAll(){
         var user = userRepository.findAll();
         return user.stream().map(UserR::converter).collect(Collectors.toList());
     }
+
+    /**
+     * Cadastra um novo adm, apenas par adm
+     * @param user
+     */
     @PostMapping("/")
     public void cadastroUseradmin(@RequestBody UserRq user){
-        var u = new User();
-        u.setCpf(user.getCpf());
-        u.setNome(user.getNome());
-        u.setPs(Utils.md5(user.getPs()));
-        u.setTipo(user.getTipo());
+        var u = UserRq.converter(user);
         userRepository.save(u);
     }
 
+    /**
+     * Endpoint para cadastro de novo cliente, adiciona as info na tabela User e replica pra Cliente
+     * @param user
+     */
     @PostMapping("/register")
     public void cadastroUserClient(@RequestBody UserRq user) {
-        String encryptedPassword = new BCryptPasswordEncoder().encode(user.getPs());
-        var u = new User();
-        u.setCpf(user.getCpf());
-        u.setNome(user.getNome());
-        u.setPs(encryptedPassword);
-        u.setTipo(user.getTipo());
+        var u = UserRq.converter(user);
         userRepository.save(u);
 
         var c = new Client();
@@ -63,6 +67,10 @@ public class UserController {
         clientRepository.save(c);
     }
 
+    /**
+     * Edita um cliente já cadastrado
+     * @param user
+     */
     @PutMapping("/")
     public void updateCliente(@RequestBody UserRq user){
 
@@ -84,6 +92,10 @@ public class UserController {
         userRepository.save(olduser);
     }
 
+    /**
+     * Deleta um usuário já cadastrado
+     * @param id_cliente
+     */
     @DeleteMapping("/{id}")
     public void deletePet(@PathVariable("id") int id_cliente){
         var oldCliente = clientRepository.findById(id_cliente).get();

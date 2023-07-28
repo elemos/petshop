@@ -20,6 +20,16 @@ public class Pet {
 
     private String nome;
 
+    public Pet(){}
+
+    public Pet(Integer id, Integer id_cliente, Integer id_raca, Date dtnascimento, String nome) {
+        this.id = id;
+        this.id_cliente = id_cliente;
+        this.id_raca = id_raca;
+        this.dtnascimento = dtnascimento;
+        this.nome = nome;
+    }
+
     public Integer getId() {
         return id;
     }

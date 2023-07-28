@@ -1,5 +1,7 @@
 package br.com.metaway.petshop.controller.dto;
 
+import br.com.metaway.petshop.model.Endereco;
+
 public class EnderecoRq {
 
     private Integer id;
@@ -69,5 +71,16 @@ public class EnderecoRq {
 
     public void setTag(String tag) {
         this.tag = tag;
+    }
+
+    public static Endereco converter(EnderecoRq endereco){
+        Endereco e = new Endereco();
+        e.setId_cliente(endereco.getId_cliente());
+        e.setCidade(endereco.getCidade());
+        e.setBairro(endereco.getBairro());
+        e.setLogradouro(endereco.getLogradouro());
+        e.setComplemento(endereco.getComplemento());
+        e.setTag(endereco.getTag());
+        return e;
     }
 }

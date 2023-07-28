@@ -20,18 +20,32 @@ public class RacaController {
     public RacaController(RacaRepository racaRepository){
         this.racaRepository = racaRepository;
     }
+
+    /**
+     * Retorna toda a lista das raças
+     * @return List of RacaR
+     */
     @GetMapping("/")
     public List<RacaR> findAll(){
         var raca = racaRepository.findAll();
         return raca.stream().map(RacaR::converter).collect(Collectors.toList());
     }
 
+    /**
+     * Retorna uma raça por id
+     * @param id
+     * @return RacaR
+     */
     @GetMapping("/{id}")
     public RacaR findbyId(@PathVariable("id") Integer id){
         var raca = racaRepository.findById(id).get();
         return RacaR.converter(raca);
     }
 
+    /**
+     * Cadastra uma nova raça, permitido apenas para adm
+     * @param raca
+     */
     @PostMapping("/")
     public void cadastroRaca(@RequestBody RacaRq raca){
         var r = new Raca();
@@ -40,6 +54,10 @@ public class RacaController {
         racaRepository.save(r);
     }
 
+    /**
+     * Edita uma raça criada, permitido apenas para adm
+     * @param raca
+     */
     @PutMapping("/")
     public void updateRaca(@RequestBody RacaRq raca){
         var oldRaca = racaRepository.findById(raca.getId()).get();
@@ -47,6 +65,10 @@ public class RacaController {
         racaRepository.save(oldRaca);
     }
 
+    /**
+     * Deleta uma reça, permitido apenas para adm
+     * @param id_raca
+     */
     @DeleteMapping("/{id}")
     public void deleteRaca(@PathVariable("id") int id_raca){
         var oldRaca = racaRepository.findById(id_raca).get();

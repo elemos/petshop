@@ -27,6 +27,11 @@ public class PetController {
         this.clientRepository = clientRepository;
     }
 
+    /**
+     * Retorna todos os pets cadastrados se for adm
+     * Se for cliente reorna todos os pets do id do cliente logado
+     * @return
+     */
     @GetMapping("/")
     public List<PetR> findAll(){
 
@@ -42,6 +47,11 @@ public class PetController {
         return pet.stream().map(PetR::converter).collect(Collectors.toList());
     }
 
+    /**
+     * Cadastra um novo pet se for adm
+     * Se for cliente cadastra o pet apenas se o id do form passado for igual do user logado
+     * @param pet
+     */
     @PostMapping("/")
     public void cadastroPet(@RequestBody PetRq pet){
 
@@ -54,17 +64,18 @@ public class PetController {
                         .get(0)
                         .getId().equals(pet.getId_cliente())) {
 
-            var p = new Pet();
-            p.setId_cliente(pet.getId_cliente());
-            p.setNome(pet.getNome());
-            p.setId_raca(pet.getId_raca());
-            p.setDtnascimento(pet.getDtnascimento());
+            var p = PetRq.converter(pet);
             petRepository.save(p);
         }else{
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
     }
 
+    /**
+     * Edita um pet já criado se for adm
+     * se for um cliente só edita o pet se o id do cliente for igual ao user logado
+     * @param pet
+     */
     @PutMapping("/")
     public void updatePet(@RequestBody PetRq pet){
         User loggedUser = Utils.getLoggedUser();
@@ -72,11 +83,7 @@ public class PetController {
 
         var oldpet = petRepository.findById(pet.getId()).get();
         if(role.equals(UserRoles.ADMIN)) {
-
-            oldpet.setId_cliente(pet.getId_cliente());
-            oldpet.setNome(pet.getNome());
-            oldpet.setId_raca(pet.getId_raca());
-            oldpet.setDtnascimento(pet.getDtnascimento());
+            oldpet = PetRq.converter(pet);
             petRepository.save(oldpet);
         }else if (clientRepository.findBycpf(loggedUser.getCpf()).get(0).getId().equals(oldpet.getId_cliente())){
             oldpet.setNome(pet.getNome());
@@ -87,7 +94,11 @@ public class PetController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
     }
-
+    /**
+     * Deleta um pet cadastrado
+     * se for cliente só deleta se o id do cliente recebido for igual ao id do user logado
+     * @param id_pet
+     */
     @DeleteMapping("/{id}")
     public void deletePet(@PathVariable("id") int id_pet){
         var oldPet = petRepository.findById(id_pet).get();
