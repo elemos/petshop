@@ -1,6 +1,7 @@
 package br.com.metaway.petshop.controller;
 
 import br.com.metaway.petshop.UserRoles;
+import br.com.metaway.petshop.Utils;
 import br.com.metaway.petshop.controller.dto.*;
 import br.com.metaway.petshop.model.Atendimento;
 import br.com.metaway.petshop.model.Pet;
@@ -34,8 +35,7 @@ public class AtendimentoController {
     @GetMapping("/")
     public List<AtendimentoR> findAll(){
 
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var role = user.getTipo();
+        var role = Utils.getUserRole();
 
         if(!role.equals(UserRoles.ADMIN)){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
@@ -47,15 +47,15 @@ public class AtendimentoController {
 
     @GetMapping("/{id_pet}")
     public List<AtendimentoR> findAllbyPet(@PathVariable Integer id_pet){
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var role = user.getTipo();
+        User loggedUser = Utils.getLoggedUser();
+        var role = Utils.getUserRole();
 
         if(role.equals(UserRoles.ADMIN)){
             var atendimentos = atendimentoRepository.findById(id_pet);
             return atendimentos.stream().map(AtendimentoR::converter).collect(Collectors.toList());
         }
 
-        var pets = petRepository.findbyClientId(clientRepository.findBycpf(user.getCpf()).get(0).getId());
+        var pets = petRepository.findbyClientId(clientRepository.findBycpf(loggedUser.getCpf()).get(0).getId());
 
         for (Pet pet : pets){
             if (pet.getId() == id_pet){
@@ -70,23 +70,23 @@ public class AtendimentoController {
     @GetMapping("/cliente")
     public List<AtendimentoR> findAllbyClient(){
 
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var role = user.getTipo();
+        User loggedUser = Utils.getLoggedUser();
+        var role = Utils.getUserRole();
 
         if(role.equals(UserRoles.ADMIN)){
             var atendimentos = atendimentoRepository.findAll();
             return atendimentos.stream().map(AtendimentoR::converter).collect(Collectors.toList());
         }
 
-        var atendimento = atendimentoRepository.findbyClientId(clientRepository.findBycpf(user.getCpf()).get(0).getId());
+        var atendimento = atendimentoRepository.findbyClientId(clientRepository.findBycpf(loggedUser.getCpf()).get(0).getId());
         return atendimento.stream().map(AtendimentoR::converter).collect(Collectors.toList());
     }
 
     @PostMapping("/")
     public void cadastroAtendimento(@RequestBody AtendimentoRq atendimento){
 
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var role = user.getTipo();
+        User loggedUser = Utils.getLoggedUser();
+        var role = Utils.getUserRole();
 
         if(!role.equals(UserRoles.ADMIN)){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);

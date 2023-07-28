@@ -1,6 +1,7 @@
 package br.com.metaway.petshop.controller;
 
 import br.com.metaway.petshop.UserRoles;
+import br.com.metaway.petshop.Utils;
 import br.com.metaway.petshop.controller.dto.PetR;
 import br.com.metaway.petshop.controller.dto.PetRq;
 import br.com.metaway.petshop.model.Pet;
@@ -29,26 +30,26 @@ public class PetController {
     @GetMapping("/")
     public List<PetR> findAll(){
 
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var role = user.getTipo();
+        User loggedUser = Utils.getLoggedUser();
+        var role = Utils.getUserRole();
 
         if(role.equals(UserRoles.ADMIN)){
             var pet = petRepository.findAll();
             return pet.stream().map(PetR::converter).collect(Collectors.toList());
         }
 
-        var pet = petRepository.findbyClientId(clientRepository.findBycpf(user.getCpf()).get(0).getId());
+        var pet = petRepository.findbyClientId(clientRepository.findBycpf(loggedUser.getCpf()).get(0).getId());
         return pet.stream().map(PetR::converter).collect(Collectors.toList());
     }
 
     @PostMapping("/")
     public void cadastroPet(@RequestBody PetRq pet){
 
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var role = user.getTipo();
+        User loggedUser = Utils.getLoggedUser();
+        var role = Utils.getUserRole();
 
         if(role.equals(UserRoles.ADMIN) ||
-                clientRepository.findBycpf(user
+                clientRepository.findBycpf(loggedUser
                                 .getCpf())
                         .get(0)
                         .getId().equals(pet.getId_cliente())) {
@@ -66,8 +67,9 @@ public class PetController {
 
     @PutMapping("/")
     public void updatePet(@RequestBody PetRq pet){
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var role = user.getTipo();
+        User loggedUser = Utils.getLoggedUser();
+        var role = Utils.getUserRole();
+
         var oldpet = petRepository.findById(pet.getId()).get();
         if(role.equals(UserRoles.ADMIN)) {
 
@@ -76,7 +78,7 @@ public class PetController {
             oldpet.setId_raca(pet.getId_raca());
             oldpet.setDtnascimento(pet.getDtnascimento());
             petRepository.save(oldpet);
-        }else if (clientRepository.findBycpf(user.getCpf()).get(0).getId().equals(oldpet.getId_cliente())){
+        }else if (clientRepository.findBycpf(loggedUser.getCpf()).get(0).getId().equals(oldpet.getId_cliente())){
             oldpet.setNome(pet.getNome());
             oldpet.setId_raca(pet.getId_raca());
             oldpet.setDtnascimento(pet.getDtnascimento());
@@ -90,10 +92,10 @@ public class PetController {
     public void deletePet(@PathVariable("id") int id_pet){
         var oldPet = petRepository.findById(id_pet).get();
 
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var role = user.getTipo();
+        User loggedUser = Utils.getLoggedUser();
+        var role = Utils.getUserRole();
 
-        if(role.equals(UserRoles.ADMIN) || clientRepository.findBycpf(user.getCpf()).get(0).getId().equals(oldPet.getId_cliente())) {
+        if(role.equals(UserRoles.ADMIN) || clientRepository.findBycpf(loggedUser.getCpf()).get(0).getId().equals(oldPet.getId_cliente())) {
             try{
                 petRepository.delete(oldPet);
             } catch (Exception e){

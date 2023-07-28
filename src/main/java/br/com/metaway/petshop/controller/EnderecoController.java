@@ -1,6 +1,7 @@
 package br.com.metaway.petshop.controller;
 
 import br.com.metaway.petshop.UserRoles;
+import br.com.metaway.petshop.Utils;
 import br.com.metaway.petshop.controller.dto.EnderecoR;
 import br.com.metaway.petshop.controller.dto.EnderecoRq;
 import br.com.metaway.petshop.model.Endereco;
@@ -30,26 +31,26 @@ public class EnderecoController {
     @GetMapping("/")
     public List<EnderecoR>finAll(){
 
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var role = user.getTipo();
+        User loggedUser = Utils.getLoggedUser();
+        var role = Utils.getUserRole();
 
         if(role.equals(UserRoles.ADMIN)){
             var enderecos = enderecoRepository.findAll();
             return enderecos.stream().map(EnderecoR::converter).collect(Collectors.toList());
         }
 
-        var enderecos = enderecoRepository.findbyClientId(clientRepository.findBycpf(user.getCpf()).get(0).getId());
+        var enderecos = enderecoRepository.findbyClientId(clientRepository.findBycpf(loggedUser.getCpf()).get(0).getId());
         return enderecos.stream().map(EnderecoR::converter).collect(Collectors.toList());
     }
 
     @PostMapping("/")
     public void cadastroEndereco(@RequestBody EnderecoRq endereco){
 
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var role = user.getTipo();
+        User loggedUser = Utils.getLoggedUser();
+        var role = Utils.getUserRole();
 
         if(role.equals(UserRoles.ADMIN) ||
-                clientRepository.findBycpf(user
+                clientRepository.findBycpf(loggedUser
                                 .getCpf())
                         .get(0)
                         .getId().equals(endereco.getId_cliente())) {
@@ -67,8 +68,8 @@ public class EnderecoController {
     }
     @PutMapping("/")
     public void updateEndereco(@RequestBody EnderecoRq endereco){
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var role = user.getTipo();
+        User loggedUser = Utils.getLoggedUser();
+        var role = Utils.getUserRole();
 
         var oldEndereco = enderecoRepository.findById(endereco.getId()).get();
         if(role.equals(UserRoles.ADMIN)) {
@@ -78,7 +79,7 @@ public class EnderecoController {
             oldEndereco.setComplemento(endereco.getComplemento());
             oldEndereco.setTag(endereco.getTag());
             enderecoRepository.save(oldEndereco);
-        }else if (clientRepository.findBycpf(user.getCpf()).get(0).getId().equals(endereco.getId_cliente())){
+        }else if (clientRepository.findBycpf(loggedUser.getCpf()).get(0).getId().equals(endereco.getId_cliente())){
             oldEndereco.setCidade(endereco.getCidade());
             oldEndereco.setBairro(endereco.getBairro());
             oldEndereco.setComplemento(endereco.getComplemento());
@@ -93,10 +94,10 @@ public class EnderecoController {
     public void deleteEndereco(@PathVariable("id") int id_endereco){
         var oldEndereco = enderecoRepository.findById(id_endereco).get();
 
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var role = user.getTipo();
+        User loggedUser = Utils.getLoggedUser();
+        var role = Utils.getUserRole();
 
-        if(role.equals(UserRoles.ADMIN) || clientRepository.findBycpf(user.getCpf()).get(0).getId().equals(oldEndereco.getId_cliente())) {
+        if(role.equals(UserRoles.ADMIN) || clientRepository.findBycpf(loggedUser.getCpf()).get(0).getId().equals(oldEndereco.getId_cliente())) {
             try{
                 enderecoRepository.delete(oldEndereco);
             } catch (Exception e){

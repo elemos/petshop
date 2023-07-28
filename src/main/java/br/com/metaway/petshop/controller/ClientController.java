@@ -1,6 +1,7 @@
 package br.com.metaway.petshop.controller;
 
 import br.com.metaway.petshop.UserRoles;
+import br.com.metaway.petshop.Utils;
 import br.com.metaway.petshop.controller.dto.ClientR;
 import br.com.metaway.petshop.controller.dto.ClientRq;
 import br.com.metaway.petshop.model.Client;
@@ -25,15 +26,15 @@ public class ClientController {
 
     @GetMapping("/")
     public List<ClientR> findAll(){
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var role = user.getTipo();
+        User loggedUser = Utils.getLoggedUser();
+        var role = Utils.getUserRole();
 
         if(role.equals(UserRoles.ADMIN)){
             var clients = clientRepository.findAll();
             return clients.stream().map(ClientR::converter).collect(Collectors.toList());
         }
 
-        var client = clientRepository.findBycpf(user.getCpf());
+        var client = clientRepository.findBycpf(loggedUser.getCpf());
         return client.stream().map(ClientR::converter).collect(Collectors.toList());
     }
 

@@ -1,6 +1,8 @@
 package br.com.metaway.petshop;
 
+import br.com.metaway.petshop.model.User;
 import jakarta.xml.bind.DatatypeConverter;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -22,5 +24,15 @@ public class Utils {
         }catch (NoSuchAlgorithmException  e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static UserRoles getUserRole() {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return user.getTipo();
+    }
+
+    public static User getLoggedUser() {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return user;
     }
 }

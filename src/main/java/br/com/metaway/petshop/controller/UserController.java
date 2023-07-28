@@ -66,8 +66,8 @@ public class UserController {
     @PutMapping("/")
     public void updateCliente(@RequestBody UserRq user){
 
-        User loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var role = loggedUser.getTipo();
+        User loggedUser = Utils.getLoggedUser();
+        var role = Utils.getUserRole();
         var oldCliente = clientRepository.findBycpf(user.getCpf()).get(0);
         var olduser    = (User) userRepository.findBycpf(user.getCpf());
 
@@ -89,10 +89,10 @@ public class UserController {
         var oldCliente = clientRepository.findById(id_cliente).get();
         var olduser    = (User) userRepository.findBycpf(oldCliente.getCpf());
 
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var role = user.getTipo();
+        User loggedUser = Utils.getLoggedUser();
+        var role = Utils.getUserRole();
 
-        if(role.equals(UserRoles.ADMIN) || clientRepository.findBycpf(user.getCpf()).get(0).getId().equals(id_cliente)) {
+        if(role.equals(UserRoles.ADMIN) || clientRepository.findBycpf(loggedUser.getCpf()).get(0).getId().equals(id_cliente)) {
             try{
                 clientRepository.delete(oldCliente);
                 userRepository.delete(olduser);

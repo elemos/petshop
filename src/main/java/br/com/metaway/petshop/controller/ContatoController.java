@@ -1,6 +1,7 @@
 package br.com.metaway.petshop.controller;
 
 import br.com.metaway.petshop.UserRoles;
+import br.com.metaway.petshop.Utils;
 import br.com.metaway.petshop.controller.dto.ContatoR;
 import br.com.metaway.petshop.controller.dto.PetR;
 import br.com.metaway.petshop.model.Contato;
@@ -31,26 +32,26 @@ public class ContatoController {
     @GetMapping("/")
     public List<ContatoR> findAll(){
 
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var role = user.getTipo();
+        User loggedUser = Utils.getLoggedUser();
+        var role = Utils.getUserRole();
 
         if(role.equals(UserRoles.ADMIN)){
             var contatos = contatoRepository.findAll();
             return contatos.stream().map(ContatoR::converter).collect(Collectors.toList());
         }
 
-        var contatos = contatoRepository.findbyClientId(clientRepository.findBycpf(user.getCpf()).get(0).getId());
+        var contatos = contatoRepository.findbyClientId(clientRepository.findBycpf(loggedUser.getCpf()).get(0).getId());
         return contatos.stream().map(ContatoR::converter).collect(Collectors.toList());
     }
 
     @PostMapping("/")
     public void cadastroContato(@RequestBody ContatoRq contato){
 
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var role = user.getTipo();
+        User loggedUser = Utils.getLoggedUser();
+        var role = Utils.getUserRole();
 
         if(role.equals(UserRoles.ADMIN) ||
-                clientRepository.findBycpf(user
+                clientRepository.findBycpf(loggedUser
                                             .getCpf())
                                             .get(0)
                                             .getId().equals(contato.getId_cliente())){
@@ -68,8 +69,8 @@ public class ContatoController {
 
     @PutMapping("/")
     public void updateContato(@RequestBody ContatoRq contato){
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var role = user.getTipo();
+        User loggedUser = Utils.getLoggedUser();
+        var role = Utils.getUserRole();
 
         var oldContato = contatoRepository.findById(contato.getId()).get();
         if(role.equals(UserRoles.ADMIN)) {
@@ -78,7 +79,7 @@ public class ContatoController {
             oldContato.setValor(contato.getValor());
             oldContato.setTag(contato.getTag());
             contatoRepository.save(oldContato);
-        }else if (clientRepository.findBycpf(user.getCpf()).get(0).getId().equals(contato.getId_cliente())){
+        }else if (clientRepository.findBycpf(loggedUser.getCpf()).get(0).getId().equals(contato.getId_cliente())){
             oldContato.setTipo(contato.getTipo());
             oldContato.setValor(contato.getValor());
             oldContato.setTag(contato.getTag());
@@ -92,10 +93,10 @@ public class ContatoController {
     public void deleteEndereco(@PathVariable("id") int id_contato){
         var oldContato = contatoRepository.findById(id_contato).get();
 
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var role = user.getTipo();
+        User loggedUser = Utils.getLoggedUser();
+        var role = Utils.getUserRole();
 
-        if(role.equals(UserRoles.ADMIN) || clientRepository.findBycpf(user.getCpf()).get(0).getId().equals(oldContato.getId_cliente())) {
+        if(role.equals(UserRoles.ADMIN) || clientRepository.findBycpf(loggedUser.getCpf()).get(0).getId().equals(oldContato.getId_cliente())) {
             try{
                 contatoRepository.delete(oldContato);
             } catch (Exception e){
