@@ -4,10 +4,19 @@ import java.sql.Date;
 
 public class PetRq {
 
+    private Integer id;
     private Integer id_cliente;
     private Integer id_raca;
     private Date dtnascimento;
     private String nome;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public Integer getId_cliente() {
         return id_cliente;

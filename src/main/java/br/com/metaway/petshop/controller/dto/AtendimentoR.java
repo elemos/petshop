@@ -11,6 +11,8 @@ public class AtendimentoR {
 
     private Integer id_pet;
 
+    private Integer id_cliente;
+
     private String descricao;
 
     private Double valor;
@@ -27,6 +29,14 @@ public class AtendimentoR {
 
     public Integer getId_pet() {
         return id_pet;
+    }
+
+    public Integer getId_cliente() {
+        return id_cliente;
+    }
+
+    public void setId_cliente(Integer id_cliente) {
+        this.id_cliente = id_cliente;
     }
 
     public void setId_pet(Integer id_pet) {
@@ -60,6 +70,7 @@ public class AtendimentoR {
     public static AtendimentoR converter(Atendimento a){
         var at = new AtendimentoR();
         at.setId_pet(a.getId_pet());
+        at.setId_cliente((a.getId_cliente()));
         at.setId(a.getId());
         at.setDescricao(a.getDescricao());
         at.setDtatendimento(a.getDtatendimento());

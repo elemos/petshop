@@ -1,6 +1,7 @@
 package br.com.metaway.petshop.controller.dto;
 
 public class ContatoRq {
+    private Integer id;
 
     private Integer id_cliente;
 
@@ -9,6 +10,14 @@ public class ContatoRq {
     private String tipo;
 
     private String valor;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public Integer getId_cliente() {
         return id_cliente;

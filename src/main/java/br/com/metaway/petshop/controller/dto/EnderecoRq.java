@@ -2,6 +2,7 @@ package br.com.metaway.petshop.controller.dto;
 
 public class EnderecoRq {
 
+    private Integer id;
     private Integer id_cliente;
 
     private String logradouro;
@@ -13,6 +14,14 @@ public class EnderecoRq {
     private String complemento;
 
     private String tag;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public Integer getId_cliente() {
         return id_cliente;

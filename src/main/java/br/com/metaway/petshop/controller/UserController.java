@@ -8,12 +8,11 @@ import br.com.metaway.petshop.controller.dto.UserR;
 import br.com.metaway.petshop.controller.dto.UserRq;
 import br.com.metaway.petshop.repository.ClientRepository;
 import br.com.metaway.petshop.repository.UserRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
@@ -50,7 +49,6 @@ public class UserController {
     @PostMapping("/register")
     public void cadastroUserClient(@RequestBody UserRq user) {
         String encryptedPassword = new BCryptPasswordEncoder().encode(user.getPs());
-        System.out.println("aqui2");
         var u = new User();
         u.setCpf(user.getCpf());
         u.setNome(user.getNome());
@@ -65,4 +63,43 @@ public class UserController {
         clientRepository.save(c);
     }
 
+    @PutMapping("/")
+    public void updateCliente(@RequestBody UserRq user){
+
+        User loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var role = loggedUser.getTipo();
+        var oldCliente = clientRepository.findBycpf(user.getCpf()).get(0);
+        var olduser    = (User) userRepository.findBycpf(user.getCpf());
+
+        if(role.equals(UserRoles.ADMIN) || oldCliente.getCpf().equals(loggedUser.getCpf())) {
+            oldCliente.setNome(user.getNome());
+            oldCliente.setCpf(user.getCpf());
+            olduser.setNome(user.getNome());
+            olduser.setCpf(user.getCpf());
+            if (user.getPs() != null && !user.getPs().isEmpty()) {
+                olduser.setPs(new BCryptPasswordEncoder().encode(user.getPs()));
+            }
+        }
+        clientRepository.save(oldCliente);
+        userRepository.save(olduser);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deletePet(@PathVariable("id") int id_cliente){
+        var oldCliente = clientRepository.findById(id_cliente).get();
+        var olduser    = (User) userRepository.findBycpf(oldCliente.getCpf());
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var role = user.getTipo();
+
+        if(role.equals(UserRoles.ADMIN) || clientRepository.findBycpf(user.getCpf()).get(0).getId().equals(id_cliente)) {
+            try{
+                clientRepository.delete(oldCliente);
+                userRepository.delete(olduser);
+            } catch (Exception e){
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Unable to delete user");
+            }
+
+        }
+    }
 }

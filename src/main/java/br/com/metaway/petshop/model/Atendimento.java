@@ -14,6 +14,8 @@ public class Atendimento {
 
     private Integer id_pet;
 
+    private Integer id_cliente;
+
     private String descricao;
 
     private Double valor;
@@ -34,6 +36,14 @@ public class Atendimento {
 
     public void setId_pet(Integer id_pet) {
         this.id_pet = id_pet;
+    }
+
+    public Integer getId_cliente() {
+        return id_cliente;
+    }
+
+    public void setId_cliente(Integer id_cliente) {
+        this.id_cliente = id_cliente;
     }
 
     public String getDescricao() {
